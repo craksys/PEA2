@@ -68,8 +68,8 @@ public class Graph {
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
                     get = myReader.nextInt();
-                    //matrix[i][j] = myReader.nextInt();
                     length = String.valueOf(get).length();
+                    //number = get;
                     number = get / Math.pow(10,length-1);
                     matrix[i][j] = number;
                 }

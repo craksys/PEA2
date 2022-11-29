@@ -1,10 +1,6 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
-
-import static java.lang.Double.MAX_VALUE;
 
 public class TabuSearch {
     private Graph graph;
@@ -13,9 +9,9 @@ public class TabuSearch {
     public static long executionTime;
     public TabuSearch(Graph graph){
         this.graph = graph;
-        bestPath = new int[graph.matrix.length-1];
-        currentPath = new int[graph.matrix.length-1];
-        nextPath = new int[graph.matrix.length-1];
+        bestPath = new int[graph.matrix.length];
+        currentPath = new int[graph.matrix.length];
+        nextPath = new int[graph.matrix.length];
         tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
         iterations = 10 * graph.matrix.length;
     }
@@ -24,13 +20,13 @@ public class TabuSearch {
     int[] currentPath;
     int[] nextPath;
 
-    double bestCost = MAX_VALUE;
+    double bestCost = 999999.9;
     double currentCost;
     double nextCost;
 
     int[][] tabuMatrix;
 
-    int swap_i, swap_j;
+    int saveI, saveJ;
 
     int iterations;
 
@@ -41,41 +37,46 @@ public class TabuSearch {
             nextPath = currentPath;
 
             for (int iteration = 0; iteration < iterations; iteration++) {
-                nextCost = MAX_VALUE;
-                swap_i = 0;
-                swap_j = 0;
+                nextCost = 999999.9;
+                saveI = 0;
+                saveJ = 0;
 
-                for (int i = 0; i < graph.matrix.length; i++) {
+                for (int i = 1; i < graph.matrix.length; i++) {
                     for (int j = i + 1; j < graph.matrix.length; j++) {
                         swap(i, j, currentPath);
                         currentCost = calculatePathCost(currentPath);
 
-                        if (currentCost < bestCost && tabuMatrix[i][j] == 0) {
-                            bestPath = currentPath;
+                        if ((currentCost < bestCost) && (tabuMatrix[i][j] == 0)) {
+                            bestPath = currentPath.clone();
                             bestCost = currentCost;
                         }
 
-                        if (currentCost < nextCost && tabuMatrix[i][j] < iteration) {
+                        if ((currentCost < nextCost) && (tabuMatrix[i][j] < iteration)) {
                             nextCost = currentCost;
-                            nextPath = currentPath;
-                            swap_i = i;
-                            swap_j = j;
+                            nextPath = currentPath.clone();
+                            saveI = i;
+                            saveJ = j;
                         }
                     }
                 }
-                currentPath = nextPath;
-                tabuMatrix[swap_i][swap_j] += graph.matrix.length; //update tabu
-
-                for (int a = 0; a < graph.matrix.length; a++) {
-                    for (int b = 0; b < graph.matrix.length; b++) {
-                        if (tabuMatrix[a][b] > 0)
-                            tabuMatrix[a][b] -= 1;
+                currentPath = nextPath.clone();
+                if(saveI != 0 && saveJ != 0) {
+                    tabuMatrix[saveI][saveJ] += graph.matrix.length; //dodanie do macierzy tabu
+                }
+                for (int x = 0; x < graph.matrix.length; x++) { //dekrementacja o 1
+                    for (int y = 0; y < graph.matrix.length; y++) {
+                        if (tabuMatrix[x][y] > 0) {
+                            tabuMatrix[x][y] -= 1;
+                        }
                     }
                 }
 
                 executionTime = System.currentTimeMillis() - millisActualTime;
                 if (executionTime > 30000) { //minuta przerwy
                     System.out.println(bestCost);
+                    for(int i = 0; i < bestPath.length; i++){
+                        System.out.print(bestPath[i] + " ");
+                    }
                     return;
                 }
             }
@@ -88,8 +89,8 @@ public class TabuSearch {
         for (int i = 0; i < graph.matrix.length; i++) {
             randomPath[i] = i;
         }
-        for (int i = 0; i < randomPath.length; i++) {//funkcja losująca kolejność
-            int randomIndexToSwap = rand.nextInt(randomPath.length);
+        for (int i = 1; i < randomPath.length; i++) {//funkcja losująca kolejność
+            int randomIndexToSwap = rand.nextInt(randomPath.length-1)+1;//wszystkie oprocz 0
             int temp = randomPath[randomIndexToSwap];
             randomPath[randomIndexToSwap] = randomPath[i];
             randomPath[i] = temp;
@@ -112,4 +113,6 @@ public class TabuSearch {
         path[i] = path[j];
         path[j] = temp;
     }
+
+
 }
