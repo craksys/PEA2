@@ -5,64 +5,56 @@ import java.util.Random;
 public class TabuSearch {
     private Graph graph;
     Random rand = new Random();
+
     public static long millisActualTime;
     public static long executionTime;
+
     public TabuSearch(Graph graph){
         this.graph = graph;
-        bestPath = new int[graph.matrix.length];
-        currentPath = new int[graph.matrix.length];
-        nextPath = new int[graph.matrix.length];
-        tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
-        iterations = 10 * graph.matrix.length;
     }
 
     int[] bestPath;
-    int[] currentPath;
-    int[] nextPath;
+    int bestCost = Integer.MAX_VALUE;
 
-    double bestCost = 999999.9;
-    double currentCost;
-    double nextCost;
 
-    int[][] tabuMatrix;
+    public void solve() {
+        int[] currentPath = generateRandomPath();
+        int[] nextPath = currentPath;
+        int[][] tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
+        int saveI, saveJ;
+        int iterations = 10 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
+        int nextCost;
+        int currentCost;
 
-    int saveI, saveJ;
 
-    int iterations;
-
-    void solve() {
         millisActualTime = System.currentTimeMillis();
         while (true) {
-            currentPath = generateRandomPath();
-            nextPath = currentPath;
-
             for (int iteration = 0; iteration < iterations; iteration++) {
-                nextCost = 999999.9;
-                saveI = 0;
-                saveJ = 0;
-
+                nextCost = Integer.MAX_VALUE;
+                currentPath = nextPath.clone();
                 for (int i = 1; i < graph.matrix.length; i++) {
                     for (int j = i + 1; j < graph.matrix.length; j++) {
-                        swap(i, j, currentPath);
+                        //swap(i, j, currentPath);
+                        //makeReverse(i,j,currentPath);
+                        insert(i,j,currentPath);
                         currentCost = calculatePathCost(currentPath);
 
                         if ((currentCost < bestCost) && (tabuMatrix[i][j] == 0)) {
                             bestPath = currentPath.clone();
                             bestCost = currentCost;
+                            nextCost = currentCost;
+                            nextPath = currentPath.clone();
                         }
-
                         if ((currentCost < nextCost) && (tabuMatrix[i][j] < iteration)) {
                             nextCost = currentCost;
                             nextPath = currentPath.clone();
-                            saveI = i;
-                            saveJ = j;
+                            tabuMatrix[i][j] += graph.matrix.length;
                         }
                     }
                 }
-                currentPath = nextPath.clone();
-                if(saveI != 0 && saveJ != 0) {
-                    tabuMatrix[saveI][saveJ] += graph.matrix.length; //dodanie do macierzy tabu
-                }
+                //if(saveI != 0 && saveJ != 0) {
+                //    tabuMatrix[saveI][saveJ] += graph.matrix.length; //dodanie do macierzy tabu
+               // }
                 for (int x = 0; x < graph.matrix.length; x++) { //dekrementacja o 1
                     for (int y = 0; y < graph.matrix.length; y++) {
                         if (tabuMatrix[x][y] > 0) {
@@ -72,11 +64,12 @@ public class TabuSearch {
                 }
 
                 executionTime = System.currentTimeMillis() - millisActualTime;
-                if (executionTime > 30000) { //minuta przerwy
+                if (executionTime > 20000) { //minuta przerwy
                     System.out.println(bestCost);
                     for(int i = 0; i < bestPath.length; i++){
                         System.out.print(bestPath[i] + " ");
                     }
+                    System.out.print("0");
                     return;
                 }
             }
@@ -84,7 +77,7 @@ public class TabuSearch {
     }
 
 
-    int[] generateRandomPath() {
+    private int[] generateRandomPath() {
         int[] randomPath = new int[graph.matrix.length];
         for (int i = 0; i < graph.matrix.length; i++) {
             randomPath[i] = i;
@@ -99,8 +92,8 @@ public class TabuSearch {
         return randomPath;
     }
 
-    double calculatePathCost(int[] path) {
-        double cost = 0;
+    private int calculatePathCost(int[] path) {
+        int cost = 0;
         for(int i = 0; i < path.length-1; i++){
             cost += graph.matrix[path[i]][path[i+1]];
         }
@@ -108,11 +101,29 @@ public class TabuSearch {
         return cost;
     }
 
-    void swap(int i, int j, int[] path){
+    private void swap(int i, int j, int[] path){
         int temp = path[i];
         path[i] = path[j];
         path[j] = temp;
     }
 
+    private void makeReverse(int i, int j, int[] path) {
+        while (i < j) {
+            int temp = path[i];
+            path[i++] = path[j];
+            path[j--] = temp;
+        }
+    }
+
+    private void insert(int i, int j, int[] path){ //przesniesienie j elementu na pozycję i'tą
+        int temp = path[i];
+        path[i] = path[j];
+
+        while(j < path.length-1){
+            path[j] = path[j+1];
+            j++;
+        }
+        path[(path.length-1)] = temp;
+    }
 
 }
