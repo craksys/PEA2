@@ -8,6 +8,7 @@ public class TabuSearch {
 
     public static long millisActualTime;
     public static long executionTime;
+    public static long bestSolutionTime;
 
     public TabuSearch(Graph graph){
         this.graph = graph;
@@ -18,43 +19,50 @@ public class TabuSearch {
 
 
     public void solve() {
-        int[] currentPath = generateRandomPath();
-        int[] nextPath = currentPath;
+        int[] currentPath;
+        int[] nextPath;
         int[][] tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
-        int saveI, saveJ;
-        int iterations = 10 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
+        int saveI = 0;
+        int saveJ = 0;
+        int iterations = 15 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
         int nextCost;
         int currentCost;
-
+        int savePath[];
 
         millisActualTime = System.currentTimeMillis();
         while (true) {
-            for (int iteration = 0; iteration < iterations; iteration++) {
-                nextCost = Integer.MAX_VALUE;
+            currentPath = generateRandomPath();
+            nextPath = currentPath;
+            currentCost = calculatePathCost(currentPath);
+            for (int a = 0; a < iterations; a++) {
                 currentPath = nextPath.clone();
+                nextCost = currentCost;
+                savePath = currentPath.clone();//zachowanie ścieżki
                 for (int i = 1; i < graph.matrix.length; i++) {
                     for (int j = i + 1; j < graph.matrix.length; j++) {
-                        //swap(i, j, currentPath);
+                        swap(i, j, currentPath);
                         //makeReverse(i,j,currentPath);
-                        insert(i,j,currentPath);
+                        //insert(i,j,currentPath);
                         currentCost = calculatePathCost(currentPath);
 
-                        if ((currentCost < bestCost) && (tabuMatrix[i][j] == 0)) {
+                        if ((currentCost < bestCost) /*&& (tabuMatrix[i][j] == 0)*/) {
                             bestPath = currentPath.clone();
                             bestCost = currentCost;
-                            nextCost = currentCost;
-                            nextPath = currentPath.clone();
+                            bestSolutionTime = System.currentTimeMillis() - millisActualTime;
+                            if((tabuMatrix[i][j] == 0)) {
+                                nextCost = currentCost;
+                                nextPath = currentPath.clone();
+                            }
                         }
-                        if ((currentCost < nextCost) && (tabuMatrix[i][j] < iteration)) {
+                        if ((currentCost < nextCost) && (tabuMatrix[i][j] < a)) {
                             nextCost = currentCost;
                             nextPath = currentPath.clone();
                             tabuMatrix[i][j] += graph.matrix.length;
                         }
+                        currentPath = savePath.clone(); // przywrocenie sciezki
                     }
                 }
-                //if(saveI != 0 && saveJ != 0) {
-                //    tabuMatrix[saveI][saveJ] += graph.matrix.length; //dodanie do macierzy tabu
-               // }
+
                 for (int x = 0; x < graph.matrix.length; x++) { //dekrementacja o 1
                     for (int y = 0; y < graph.matrix.length; y++) {
                         if (tabuMatrix[x][y] > 0) {
@@ -64,12 +72,13 @@ public class TabuSearch {
                 }
 
                 executionTime = System.currentTimeMillis() - millisActualTime;
-                if (executionTime > 20000) { //minuta przerwy
+                if (executionTime > 120000) { //minuta przerwy
                     System.out.println(bestCost);
                     for(int i = 0; i < bestPath.length; i++){
                         System.out.print(bestPath[i] + " ");
                     }
-                    System.out.print("0");
+                    System.out.println("0");
+                    System.out.println("Najlepsze rozwiązanie znaleziono w: "+ bestSolutionTime +" ms");
                     return;
                 }
             }
