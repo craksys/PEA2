@@ -3,14 +3,14 @@ package com.company;
 import java.util.Random;
 
 public class TabuSearch {
-    private Graph graph;
+    private final Graph graph;
     private long timeLimit;
     private int neighbor;
     Random rand = new Random();
 
-    public static long millisActualTime;
-    public static long executionTime;
-    public static long bestSolutionTime;
+    private static long millisActualTime;
+    private static long executionTime;
+    private static long bestSolutionTime;
 
     public TabuSearch(Graph graph, long timeLimit, int neighbor){
         this.graph = graph;
@@ -18,8 +18,8 @@ public class TabuSearch {
         this.neighbor = neighbor;
     }
 
-    int[] bestPath;
-    int bestCost = Integer.MAX_VALUE;
+    public int[] bestPath;
+    public int bestCost = Integer.MAX_VALUE;
 
 
     public void solve() {
@@ -29,7 +29,7 @@ public class TabuSearch {
         int iterations = 10 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
         int nextCost;
         int currentCost;
-        int savePath[];
+        int[] savePath;
         bestCost = Integer.MAX_VALUE;
         millisActualTime = System.currentTimeMillis();
         while (true) {
@@ -81,8 +81,8 @@ public class TabuSearch {
                 executionTime = System.currentTimeMillis() - millisActualTime;
                 if (executionTime > timeLimit) { //minuta przerwy
                     System.out.println(bestCost);
-                    for(int i = 0; i < bestPath.length; i++){
-                        System.out.print(bestPath[i] + " ");
+                    for (int j : bestPath) {
+                        System.out.print(j + " ");
                     }
                     System.out.println("0");
                     System.out.println("Najlepsze rozwiązanie znaleziono w: "+ bestSolutionTime +" ms");
@@ -92,7 +92,7 @@ public class TabuSearch {
         }
     }
 
-    public void random(){
+    private void random(){
         millisActualTime = System.currentTimeMillis();
         int[] currentPath;
         int currentCost;
@@ -106,8 +106,8 @@ public class TabuSearch {
             executionTime = System.currentTimeMillis() - millisActualTime;
             if (executionTime > timeLimit) { //minuta przerwy
                 System.out.println(bestCost);
-                for(int i = 0; i < bestPath.length; i++){
-                    System.out.print(bestPath[i] + " ");
+                for (int j : bestPath) {
+                    System.out.print(j + " ");
                 }
                 System.out.println("0");
                 System.out.println("Najlepsze rozwiązanie znaleziono w: "+ bestSolutionTime +" ms");
@@ -147,7 +147,7 @@ public class TabuSearch {
     }
 
 
-    public void makeReverse(int i, int j, int[] path){
+    private void makeReverse(int i, int j, int[] path){
         int temp;
         while(i < j) {
             temp = path[i];
@@ -184,9 +184,7 @@ public class TabuSearch {
             tempTab[x] = path[x];
         }
 
-        for(int y = 0; y < path.length; y++){
-            path[y] = tempTab[y];
-        }
+        System.arraycopy(tempTab, 0, path, 0, path.length);
     }
 
 }
