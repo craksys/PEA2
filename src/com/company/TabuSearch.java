@@ -1,17 +1,22 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class TabuSearch {
     private Graph graph;
+    private long timeLimit;
+    private int neighbor;
     Random rand = new Random();
 
     public static long millisActualTime;
     public static long executionTime;
     public static long bestSolutionTime;
 
-    public TabuSearch(Graph graph){
+    public TabuSearch(Graph graph, long timeLimit, int neighbor){
         this.graph = graph;
+        this.timeLimit = timeLimit;
+        this.neighbor = neighbor;
     }
 
     int[] bestPath;
@@ -22,13 +27,11 @@ public class TabuSearch {
         int[] currentPath;
         int[] nextPath;
         int[][] tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
-        int saveI = 0;
-        int saveJ = 0;
-        int iterations = 15 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
+        int iterations = 10 * graph.matrix.length; //liczba iteracji to 10 krotnosc liczby miast
         int nextCost;
         int currentCost;
         int savePath[];
-
+        bestCost = Integer.MAX_VALUE;
         millisActualTime = System.currentTimeMillis();
         while (true) {
             currentPath = generateRandomPath();
@@ -40,9 +43,14 @@ public class TabuSearch {
                 savePath = currentPath.clone();//zachowanie ścieżki
                 for (int i = 1; i < graph.matrix.length; i++) {
                     for (int j = i + 1; j < graph.matrix.length; j++) {
-                        swap(i, j, currentPath);
-                        //makeReverse(i,j,currentPath);
-                        //insert(i,j,currentPath);
+                        if(neighbor == 1) {
+                            swap(i, j, currentPath);
+                        }else if (neighbor == 2){
+                            insertv2(i,j,currentPath);
+                        }else if(neighbor == 3){
+                            makeReverse(i,j,currentPath);
+                        }
+
                         currentCost = calculatePathCost(currentPath);
 
                         if ((currentCost < bestCost) /*&& (tabuMatrix[i][j] == 0)*/) {
@@ -72,7 +80,7 @@ public class TabuSearch {
                 }
 
                 executionTime = System.currentTimeMillis() - millisActualTime;
-                if (executionTime > 120000) { //minuta przerwy
+                if (executionTime > timeLimit) { //minuta przerwy
                     System.out.println(bestCost);
                     for(int i = 0; i < bestPath.length; i++){
                         System.out.print(bestPath[i] + " ");
@@ -85,6 +93,29 @@ public class TabuSearch {
         }
     }
 
+    public void random(){
+        millisActualTime = System.currentTimeMillis();
+        int[] currentPath;
+        int currentCost;
+        while(true) {
+            currentPath = generateRandomPath();
+            currentCost = calculatePathCost(currentPath);
+            if ((currentCost < bestCost) /*&& (tabuMatrix[i][j] == 0)*/) {
+                bestPath = currentPath.clone();
+                bestCost = currentCost;
+            }
+            executionTime = System.currentTimeMillis() - millisActualTime;
+            if (executionTime > timeLimit) { //minuta przerwy
+                System.out.println(bestCost);
+                for(int i = 0; i < bestPath.length; i++){
+                    System.out.print(bestPath[i] + " ");
+                }
+                System.out.println("0");
+                System.out.println("Najlepsze rozwiązanie znaleziono w: "+ bestSolutionTime +" ms");
+                return;
+            }
+        }
+    }
 
     private int[] generateRandomPath() {
         int[] randomPath = new int[graph.matrix.length];
@@ -124,7 +155,7 @@ public class TabuSearch {
         }
     }
 
-    private void insert(int i, int j, int[] path){ //przesniesienie j elementu na pozycję i'tą
+    private void insert(int i, int j, int[] path){ //błędna funkcja
         int temp = path[i];
         path[i] = path[j];
 
@@ -133,6 +164,26 @@ public class TabuSearch {
             j++;
         }
         path[(path.length-1)] = temp;
+    }
+
+    private void insertv2(int i,int j, int[] path){
+        int[] tempTab = new int[path.length];
+        int x;
+        for(x = 0;x<i;x++){
+            tempTab[x] = path[x];
+        }
+        tempTab[i] = path[j];
+        for(x=x+1 ; x < j+1 ;x++) {
+            tempTab[x] = path[x-1];
+        }
+
+        for(; x < path.length ;x++) {
+            tempTab[x] = path[x];
+        }
+
+        for(int y = 0; y < path.length; y++){
+            path[y] = tempTab[y];
+        }
     }
 
 }
