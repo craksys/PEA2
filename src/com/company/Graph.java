@@ -55,13 +55,13 @@ public class Graph {
             int length, get;
 
 
-            while(!dimension.equals(helper)){ //przejscie do linijki z rozmiarem problemu
+            while (!dimension.equals(helper)) { //przejscie do linijki z rozmiarem problemu
                 helper = myReader.next();
             }
             size = myReader.nextInt(); //odczytujemy liczbę miast
             matrix = new double[size][size];
 
-            while(!edgeStartPattern.equals(helper)){
+            while (!edgeStartPattern.equals(helper)) {
                 helper = myReader.next();
             }
 

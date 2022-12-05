@@ -12,7 +12,7 @@ public class Main {
         int timeLimit = 120000;
         int neighbor = 1;
         Graph graph = new Graph();
-        TabuSearch tabuSearch = new TabuSearch(graph, timeLimit, neighbor);
+        TabuSearch tabuSearch;
         int menu = -1;
         while (menu != 0) {
             printOptions();
@@ -35,22 +35,23 @@ public class Main {
                     System.out.println("2. Insert()");
                     System.out.println("3. Inverse()");
                     neighbor = in.nextInt();
-                    if(neighbor < 1 || neighbor > 3){
+                    if (neighbor < 1 || neighbor > 3) {
                         neighbor = 1;
                     }
                 }
                 case 4 -> {
-                    tabuSearch = new TabuSearch(graph,timeLimit,neighbor);
+                    tabuSearch = new TabuSearch(graph, timeLimit, neighbor);
                     tabuSearch.solve();
                 }
                 default -> {
-                    return;
+                    menu = 0;
                 }
             }
 
         }
     }
-    public static void printOptions(){
+
+    public static void printOptions() {
         System.out.println("Wybierz opcję programu: ");
         System.out.println("1. Wczytaj graf z pliku");
         System.out.println("2. Kryterium stopu");
