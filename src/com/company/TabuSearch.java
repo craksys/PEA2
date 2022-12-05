@@ -1,6 +1,5 @@
 package com.company;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class TabuSearch {
@@ -53,7 +52,7 @@ public class TabuSearch {
 
                         currentCost = calculatePathCost(currentPath);
 
-                        if ((currentCost < bestCost) /*&& (tabuMatrix[i][j] == 0)*/) {
+                        if ((currentCost < bestCost)) {
                             bestPath = currentPath.clone();
                             bestCost = currentCost;
                             bestSolutionTime = System.currentTimeMillis() - millisActualTime;
@@ -147,11 +146,15 @@ public class TabuSearch {
         path[j] = temp;
     }
 
-    private void makeReverse(int i, int j, int[] path) {
-        while (i < j) {
-            int temp = path[i];
-            path[i++] = path[j];
-            path[j--] = temp;
+
+    public void makeReverse(int i, int j, int[] path){
+        int temp;
+        while(i < j) {
+            temp = path[i];
+            path[i] = path[j];
+            path[j] = temp;
+            i++;
+            j--;
         }
     }
 
