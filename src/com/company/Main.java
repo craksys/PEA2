@@ -7,8 +7,7 @@ public class Main {
     public static final String ANSI_RED = "\u001B[31m";
 
     public static void main(String[] args) {
-        System.out.println("Podaj czas: ");
-        Scanner in = new Scanner(System.in);
+        Scanner in = new Scanner(System.in); //inicjalizacja
         int timeLimit = 120000;
         int neighbor = 1;
         Graph graph = new Graph();
@@ -17,7 +16,7 @@ public class Main {
         while (menu != 0) {
             printOptions();
             menu = in.nextInt();
-            switch (menu) {
+            switch (menu) { //menu
                 case 1 -> {
                     graph = new Graph();
                     System.out.println("Podaj nazwę pliku: ");
@@ -51,7 +50,7 @@ public class Main {
         }
     }
 
-    public static void printOptions() {
+    public static void printOptions() { //drukowanie opcji programu
         System.out.println("Wybierz opcję programu: ");
         System.out.println("1. Wczytaj graf z pliku");
         System.out.println("2. Kryterium stopu");

@@ -3,12 +3,12 @@ package com.company;
 import java.util.Random;
 
 public class TabuSearch {
-    private static long millisActualTime;
+    private static long millisActualTime; //zmienne do pomiaru czasu
     private static long executionTime;
     private static long bestSolutionTime;
-    private final Graph graph;
-    public int[] bestPath;
-    public int bestCost = Integer.MAX_VALUE;
+    private final Graph graph; //graf
+    public int[] bestPath; //najlepsza ścieżka
+    public int bestCost = Integer.MAX_VALUE; // najlepszy koszt
     Random rand = new Random();
     private final long timeLimit;
     private final int neighbor;
@@ -18,7 +18,7 @@ public class TabuSearch {
         this.neighbor = neighbor;
     }
 
-    public void solve() {
+    public void solve() { //funkcja rozwiązująca tabu search
         int[] currentPath;
         int[] nextPath;
         int[][] tabuMatrix = new int[graph.matrix.length][graph.matrix.length];
@@ -88,7 +88,7 @@ public class TabuSearch {
         }
     }
 
-    private void random() {
+    private void random() { //funkcja testująca losowe ścieżki - do testów
         millisActualTime = System.currentTimeMillis();
         int[] currentPath;
         int currentCost;
@@ -112,7 +112,7 @@ public class TabuSearch {
         }
     }
 
-    private int[] generateRandomPath() {
+    private int[] generateRandomPath() { //generowanie losowej ścieżki
         int[] randomPath = new int[graph.matrix.length];
         for (int i = 0; i < graph.matrix.length; i++) {
             randomPath[i] = i;
